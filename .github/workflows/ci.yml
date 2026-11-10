@@ -1,0 +1,13 @@
+name: ci
+on: [push, workflow_dispatch]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - run: |
+          M=https://repo1.maven.org/maven2
+          for u in org/clojure/clojure/1.11.1/clojure-1.11.1.jar org/clojure/spec.alpha/0.3.218/spec.alpha-0.3.218.jar org/clojure/core.specs.alpha/0.2.62/core.specs.alpha-0.2.62.jar io/github/hanshs474/aigifmaker/0.1.1/aigifmaker-0.1.1.jar; do curl -sfLO $M/$u; done
+          AIGIFMAKER_SMOKE=1 java -cp "$(ls *.jar | tr '\n' ':')src:test" clojure.main -m aigifmaker.core-test
